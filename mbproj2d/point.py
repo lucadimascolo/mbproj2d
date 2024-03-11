@@ -78,9 +78,9 @@ class PointPowerlaw(PointBase):
 
         #   ----------------------------------
         #   LDM edit: use sky coordinates
-            cx_as, cy_as = img.wcs.crval
-            cx_as, cy_as = (pars['%s_cx' % self.name].v-cx_as)*np.cos(np.deg2rad(cy_as)), \
-                            pars['%s_cy' % self.name].v-cy_as
+            cx_as, cy_as = img.wcs.all_world2pix(*img.wcs.crval,0)
+            cx_as *= img.pixsize_as
+            cy_as *= img.pixsize_as
         #   ----------------------------------
             
             # split flux into 4 bins using linear interpolation
