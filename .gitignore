@@ -3,3 +3,5 @@
 *.o
 *.so
 __pycache__
+*egg-info
+mbproj2d/fast/fast.cpp

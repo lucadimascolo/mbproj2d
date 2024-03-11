@@ -66,8 +66,11 @@ class ClusterBase(SrcModelBase):
     def compute(self, pars, imgarrs):
         """Add cluster model to images."""
 
-        cy_as = pars[f'{self.name}_cy'].v
-        cx_as = pars[f'{self.name}_cx'].v
+    #   ----------------------------------
+    #   LDM edit: use sky coordinates
+    #   cy_as = pars[f'{self.name}_cy'].v
+    #   cx_as = pars[f'{self.name}_cx'].v
+    #   ----------------------------------
 
         # Optional parameters:
         #  ellipticity (0..1)
@@ -108,6 +111,13 @@ class ClusterBase(SrcModelBase):
             sb_arr = self.pixsize_Radii[pixsize_as].project(emiss_arr_pkpc3)
             sb_arr *= (self.cosmo.as_kpc*pixsize_as)**2
 
+        #   ----------------------------------
+        #   LDM edit: use sky coordinates
+            cx_as, cy_as = img.wcs.crval
+            cx_as, cy_as = (pars['%s_cx' % self.name].v-cx_as)*np.cos(np.deg2rad(cy_as)), \
+                            pars['%s_cy' % self.name].v-cy_as
+        #   ----------------------------------
+            
             # compute centre in pixels
             pix_cy = cy_as*img.invpixsize + img.origin[0]
             pix_cx = cx_as*img.invpixsize + img.origin[1]
@@ -359,8 +369,11 @@ class EmissionMeasureCluster(ClusterBase):
 
         This completely overrides the base class."""
 
-        cy_as = pars[f'{self.name}_cy'].v
-        cx_as = pars[f'{self.name}_cx'].v
+    #   ----------------------------------
+    #   LDM edit: use sky coordinates
+    #   cy_as = pars[f'{self.name}_cy'].v
+    #   cx_as = pars[f'{self.name}_cx'].v
+    #   ----------------------------------
 
         # Optional parameters:
         #  ellipticity (0..1)
@@ -400,6 +413,13 @@ class EmissionMeasureCluster(ClusterBase):
             sb_arr = self.image_RateCalc[img].get(
                 T_arr[pixsize_as], Z_arr[pixsize_as], norm_ppix2)
             sb_arr = sb_arr.astype(N.float32)
+
+        #   ----------------------------------
+        #   LDM edit: use sky coordinates
+            cx_as, cy_as = img.wcs.crval
+            cx_as, cy_as = (pars['%s_cx' % self.name].v-cx_as)*np.cos(np.deg2rad(cy_as)), \
+                            pars['%s_cy' % self.name].v-cy_as
+        #   ----------------------------------
 
             # compute centre in pixels
             pix_cy = cy_as*img.invpixsize + img.origin[0]
