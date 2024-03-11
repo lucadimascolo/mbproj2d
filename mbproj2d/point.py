@@ -64,9 +64,11 @@ class PointPowerlaw(PointBase):
                 img.rmf, img.arf, img.emin_keV, img.emax_keV, NH_1022pcm2)
 
     def compute(self, pars, imgarrs):
+    #   ----------------------------------
     #   LDM edit: use sky coordinates
     #   cy_as = pars['%s_cy' % self.name].v
     #   cx_as = pars['%s_cx' % self.name].v
+    #   ----------------------------------
         gamma = pars['%s_gamma' % self.name].v
         norm = math.exp(pars['%s_lognorm' % self.name].v)
 
@@ -74,10 +76,12 @@ class PointPowerlaw(PointBase):
             # get rate for source in band
             rate = self.imageRateCalc[img].get(gamma, norm)
 
+        #   ----------------------------------
         #   LDM edit: use sky coordinates
             cx_as, cy_as = img.wcs.crval
             cx_as, cy_as = (pars['%s_cx' % self.name].v-cx_as)*np.cos(np.deg2rad(cy_as)), \
                             pars['%s_cy' % self.name].v-cy_as
+        #   ----------------------------------
             
             # split flux into 4 bins using linear interpolation
             # this makes the fitting more robust if a source doesn't jump between pixels
