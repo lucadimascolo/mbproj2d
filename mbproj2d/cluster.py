@@ -113,7 +113,9 @@ class ClusterBase(SrcModelBase):
 
         #   ----------------------------------
         #   LDM edit: use sky coordinates
-            cx_as, cy_as = img.wcs.all_world2pix(*img.wcs.crval,0)
+            cx_as = pars['%s_cx' % self.name].v
+            cy_as = pars['%s_cy' % self.name].v
+            cx_as, cy_as = img.wcs.all_world2pix(cx_as,cy_as,0)
             cx_as *= img.pixsize_as
             cy_as *= img.pixsize_as
         #   ----------------------------------
@@ -416,7 +418,9 @@ class EmissionMeasureCluster(ClusterBase):
 
         #   ----------------------------------
         #   LDM edit: use sky coordinates
-            cx_as, cy_as = img.wcs.all_world2pix(*img.wcs.crval,0)
+            cx_as = pars['%s_cx' % self.name].v
+            cy_as = pars['%s_cy' % self.name].v
+            cx_as, cy_as = img.wcs.all_world2pix(cx_as,cy_as,0)
             cx_as *= img.pixsize_as
             cy_as *= img.pixsize_as
         #   ----------------------------------

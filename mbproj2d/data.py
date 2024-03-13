@@ -88,9 +88,12 @@ class Image:
         if psf is None:
             self.psf = None
         else:
-            # copy so image-specific parts are kept separate
-            self.psf = psf.copy()
-            self.psf.matchImage(self.shape, pixsize_as)
+            if hasattr(psf,'ciao') and psf.ciao:
+                self.psf = psf
+            else:
+                # copy so image-specific parts are kept separate
+                self.psf = psf.copy()
+                self.psf.matchImage(self.shape, pixsize_as)
 
         self.origin = origin
 
@@ -281,3 +284,10 @@ class PSF:
 
         # make sure convolution is positive
         fast.clip2DMax(inimg, minval)
+
+class PSFciao:
+    def __init__(self):
+        self.ciao = True
+    
+    def applyTo(self,inimg,minval=1e-10):
+        fast.clip2DMax(inimg,minval)

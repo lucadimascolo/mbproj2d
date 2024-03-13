@@ -21,6 +21,8 @@ import numpy as np
 import astropy.wcs
 from astropy.io import fits
 from astropy.coordinates import SkyCoord
+from astropy.convolution import Gaussian2DKernel, interpolate_replace_nans
+from astropy.convolution import convolve_fft as convolve
 
 from . import data
 
@@ -121,7 +123,7 @@ def imageLoad(img_fname, exp_fname,
 
     return img
 
-def PSFLoad(filename, hdu):
+def PSFLoad(filename, hdu, fixheader=True):
     """Load a PSF image from filename given index/name of HDU.
 
     PSF should have CRPIX1/2 as origin and CDELT1 as pixel size (arcsec)
@@ -134,7 +136,16 @@ def PSFLoad(filename, hdu):
 
     # construct PSF object using image from appropriate HDU
     hdu = psff[hdu]
+    
+    if fixheader:
+        wcs = astropy.wcs.WCS(hdu)
+
+        crval1, crval2 = wcs.all_pix2world(0.50*hdu.header['NAXIS1']+1.00,0.50*hdu.header['NAXIS2']+1,1)
+        hdu.header['CRVAL1'] = float(crval1); hdu.header['CRPIX1'] = hdu.header['NAXIS1']*0.50+1.00
+        hdu.header['CRVAL2'] = float(crval2); hdu.header['CRPIX2'] = hdu.header['NAXIS2']*0.50+1.00
+
     psfimg = hdu.data
+
     #  this is the centre of the PSF (y,x)
     psforig = (hdu.header['CRPIX2']-1, hdu.header['CRPIX1']-1)
 
