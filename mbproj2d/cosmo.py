@@ -150,6 +150,8 @@ class Cosmology:
         self._calc_rho_c = 3. * (
             Hz_km_s_Mpc / physconstants.Mpc_km )**2 / (8 * pi * physconstants.G_cgs)
 
+        self._calc_Hz = Hz_km_s_Mpc
+
     @property
     def D_A(self):
         """Get angular diameter distance in Mpc."""
@@ -174,3 +176,8 @@ class Cosmology:
         self._calculate()
         return self._calc_rho_c
 
+    @property
+    def Hz(self):
+        """Get Hz"""
+        self._calculate()
+        return self._calc_Hz

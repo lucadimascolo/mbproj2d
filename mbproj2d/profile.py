@@ -231,28 +231,26 @@ class ProfileVikhDensity(ProfileBase):
         ProfileBase.__init__(self, name, pars)
         self.mode = mode
 
-        pars['%s_logn0_1' % name] = Par(math.log(1e-3), minval=-14., maxval=5., soft=True)
-        pars['%s_beta_1' % name] = Par(2/3., prior=PriorBoundedGaussian(2/3, 0.3, minval=0.2))
-        pars['%s_logrc_1' % name] = Par(math.log(300), prior=PriorGaussian(math.log(100), 1))
-        #pars['%s_alpha' % name] = Par(0., minval=-1, maxval=2.)
-        pars['%s_alpha' % name] = Par(0.1, prior=PriorGaussian(0, 1))
-
+        pars['%s_logn0_1' % name] = Par(-3.00, minval=-8.00, maxval=5.00, soft=True)
+        pars['%s_beta_1'  % name] = Par( 0.60, minval= 0.00, maxval=4.00, soft=True)
+        pars['%s_logrc_1' % name] = Par( 2.50, minval= 0.00, maxval=5.00, soft=True)
+        pars['%s_alpha'   % name] = Par( 0.00, minval=-2.00, maxval=2.00, soft=True)
+        
         if mode in {'single', 'double'}:
-            #pars['%s_epsilon' % name] = Par(3., minval=0., maxval=5.)
-            pars['%s_epsilon' % name] = Par(0., prior=PriorGaussian(0, 1))
-            pars['%s_gamma' % name] = Par(3., minval=0., maxval=10, frozen=True, soft=True)
-            pars['%s_logr_s' % name] = Par(math.log(500), prior=PriorGaussian(math.log(500), 0.5))
-
+            pars['%s_epsilon' % name] = Par(3.00, minval=0.00, maxval= 5.00)
+            pars['%s_gamma'   % name] = Par(3.00, minval=0.00, maxval=10.00, frozen=True)
+            pars['%s_logr_s'  % name] = Par(2.50, minval=0.00, maxval= 5.00)
+            
         if mode == 'double':
-            pars['%s_logn0_2' % name] = Par(math.log(0.1), minval=-14., maxval=5., soft=True)
-            pars['%s_beta_2' % name] = Par(0.5, minval=0., maxval=4., soft=True)
-            pars['%s_logrc_2' % name] = Par(math.log(50), minval=-2, maxval=8.5, soft=True)
+            pars['%s_logn0_2' % name] = Par(-2.50, minval=-8.00, maxval=5.00, soft=True)
+            pars['%s_beta_2'  % name] = Par( 0.50, minval= 0.00, maxval=4.00, soft=True)
+            pars['%s_logrc_2' % name] = Par( 3.90, minval=-2.00, maxval=5.00, soft=True)
 
     def compute(self, pars, radii):
-        n0_1 = math.exp(pars['%s_logn0_1' % self.name].v)
+        n0_1   = math.exp(N.log(10.00)*pars['%s_logn0_1' % self.name].v)
+        rc_1   = math.exp(N.log(10.00)*pars['%s_logrc_1' % self.name].v)
         beta_1 = pars['%s_beta_1' % self.name].v
-        rc_1 = math.exp(pars['%s_logrc_1' % self.name].v)
-        alpha = pars['%s_alpha' % self.name].v
+        alpha  = pars['%s_alpha'  % self.name].v
 
         r = radii.cent_kpc
         retn_sqd = (
@@ -262,15 +260,15 @@ class ProfileVikhDensity(ProfileBase):
             )
 
         if self.mode in ('single', 'double'):
-            r_s = math.exp(pars['%s_logr_s' % self.name].v)
+            r_s = math.exp(N.log(10.00)*pars['%s_logr_s' % self.name].v)
             epsilon = pars['%s_epsilon' % self.name].v
-            gamma = pars['%s_gamma' % self.name].v
+            gamma   = pars['%s_gamma'   % self.name].v
 
             retn_sqd /= (1+(r/r_s)**gamma)**(epsilon/gamma)
 
         if self.mode == 'double':
-            n0_2 = math.exp(pars['%s_logn0_2' % self.name].v)
-            rc_2 = math.exp(pars['%s_logrc_2' % self.name].v)
+            n0_2 = math.exp(N.log(10.00)*pars['%s_logn0_2' % self.name].v)
+            rc_2 = math.exp(N.log(10.00)*pars['%s_logrc_2' % self.name].v)
             beta_2 = pars['%s_beta_2' % self.name].v
 
             retn_sqd += n0_2**2 / (1 + r**2/rc_2**2)**(3*beta_2)
@@ -287,25 +285,25 @@ class ProfileMcDonaldT(ProfileBase):
     def __init__(self, name, pars):
         ProfileBase.__init__(self, name, pars)
 
-        pars['%s_logT0' % name] = Par(1, minval=-2.3, maxval=4)
-        pars['%s_logTmin' % name] = Par(1.2, minval=-2.3, maxval=4)
-        pars['%s_logrc' % name] = Par(5.3, minval=-2.3, maxval=8.5)
-        pars['%s_logrt' % name] = Par(6.2, minval=0, maxval=8.5)
-        pars['%s_acool' % name] = Par(2., minval=0, maxval=8.5)
-        pars['%s_a' % name] = Par(0., minval=-4, maxval=4.)
-        pars['%s_b' % name] = Par(1., minval=0.001, maxval=4.)
-        pars['%s_c' % name] = Par(1., minval=0, maxval=4.)
+        pars['%s_logT0' % name] = Par(0.50, minval=-2.00, maxval=3.00)
+        pars['%s_cmin'  % name] = Par(0.50, minval= 0.00, maxval=1.00)
+        pars['%s_logrc' % name] = Par(2.50, minval=-1.00, maxval=5.00)
+        pars['%s_logrt' % name] = Par(2.75, minval=-1.00, maxval=8.00)
+        pars['%s_acool' % name] = Par(2.00, minval= 0.00, maxval=8.50)
+        pars['%s_a'     % name] = Par(0.00, minval=-4.00, maxval=4.00)
+        pars['%s_b'     % name] = Par(1.00, minval= 0.01, maxval=4.00)
+        pars['%s_c'     % name] = Par(1.00, minval= 0.00, maxval=4.00)
 
     def compute(self, pars, radii):
         n = self.name
-        T0 = math.exp(pars['%s_logT0' % n].v)
-        Tmin = math.exp(pars['%s_logTmin' % n].v)
-        rc = math.exp(pars['%s_logrc' % n].v)
-        rt = math.exp(pars['%s_logrt' % n].v)
-        acool = pars['%s_acool' % n].v
-        a = pars['%s_a' % n].v
-        b = pars['%s_b' % n].v
-        c = pars['%s_c' % n].v
+        T0    = 10**pars['%s_logT0' % n].v
+        rc    = 10**pars['%s_logrc' % n].v
+        rt    = 10**pars['%s_logrt' % n].v
+        cmin  = pars['%s_cmin'      % n].v
+        acool = pars['%s_acool'     % n].v
+        a     = pars['%s_a'         % n].v
+        b     = pars['%s_b'         % n].v
+        c     = pars['%s_c'         % n].v
 
         x = radii.cent_kpc
         x_rc = x*(1/rc)
@@ -313,56 +311,9 @@ class ProfileMcDonaldT(ProfileBase):
 
         T = (
             T0
-            * (x_rc**acool + (Tmin/T0))
+            * (x_rc**acool + cmin)
             / (1 + x_rc**acool)
-            * x_rt**-a
-            / (1 + x_rt**b)**(c/b)
-            )
-
-        return T
-
-
-class ProfileVikhT500(ProfileBase):
-    """Temperature model from McDonald+14, equation 1, 
-        with fixed parameters from Vikhlinin+2006
-
-        Log values are are log_e
-    """
-
-    def __init__(self, name, pars):
-        ProfileBase.__init__(self, name, pars)
-
-        pars['%s_logT0' % name] = Par(1, minval=-2.3, maxval=4)
-        pars['%s_logTmin' % name] = Par(1.2, minval=-2.3, maxval=4)
-        pars['%s_cc' % name] = Par(0.045, minval=0.00, maxval=3.00)
-        pars['%s_ct' % name] = Par(0.600, minval=0.00, maxval=3.00)
-        pars['%s_logr500' % name] = Par(5.30, minval=-2.30, maxval=8.50)
-        pars['%s_acool' % name] = Par(2., minval=0, maxval=8.5)
-        pars['%s_a' % name] = Par(0., minval=-4, maxval=4.)
-        pars['%s_b' % name] = Par(1., minval=0.001, maxval=4.)
-        pars['%s_c' % name] = Par(1., minval=0, maxval=4.)
-
-    def compute(self, pars, radii):
-        n = self.name
-        T0 = math.exp(pars['%s_logT0' % n].v)
-        Tmin = math.exp(pars['%s_logTmin' % n].v)
-        cc = pars['%s_cc' % n].v
-        ct = pars['%s_ct' % n].v
-        r500 = math.exp(pars['%s_logr500' % n].v)
-        acool = pars['%s_acool' % n].v
-        a = pars['%s_a' % n].v
-        b = pars['%s_b' % n].v
-        c = pars['%s_c' % n].v
-
-        x = radii.cent_kpc
-        x_rc = x/cc/r500
-        x_rt = x/ct/r500
-
-        T = (
-            T0
-            * (x_rc**acool + (Tmin/T0))
-            / (1 + x_rc**acool)
-            * x_rt**-a
+            * x_rt**(-a)
             / (1 + x_rt**b)**(c/b)
             )
 

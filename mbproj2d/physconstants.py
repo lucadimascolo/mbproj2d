@@ -54,3 +54,9 @@ yr_s = 31556926
 # convert total pressure in erg cm^-3 and electron density in cm^-3 to
 # temperature in keV
 P_keV_to_erg = keV_K * boltzmann_erg_K * (1 + 1/ne_nH)
+
+# proton mass in g
+m_p = 1.67262192e-24
+
+# mean molecular weight
+mu = 0.59
