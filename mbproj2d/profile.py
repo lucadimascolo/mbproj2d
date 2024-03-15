@@ -320,3 +320,50 @@ class ProfileMcDonaldT(ProfileBase):
             )
 
         return T
+
+
+class ProfileVikhT500(ProfileBase):
+    """Temperature model from McDonald+14, equation 1, 
+        with fixed parameters from Vikhlinin+2006
+
+        Log values are are log_e
+    """
+
+    def __init__(self, name, pars):
+        ProfileBase.__init__(self, name, pars)
+
+        pars['%s_logT0' % name] = Par(1, minval=-2.3, maxval=4)
+        pars['%s_logTmin' % name] = Par(1.2, minval=-2.3, maxval=4)
+        pars['%s_cc' % name] = Par(0.045, minval=0.00, maxval=3.00)
+        pars['%s_ct' % name] = Par(0.600, minval=0.00, maxval=3.00)
+        pars['%s_logr500' % name] = Par(5.30, minval=-2.30, maxval=8.50)
+        pars['%s_acool' % name] = Par(2., minval=0, maxval=8.5)
+        pars['%s_a' % name] = Par(0., minval=-4, maxval=4.)
+        pars['%s_b' % name] = Par(1., minval=0.001, maxval=4.)
+        pars['%s_c' % name] = Par(1., minval=0, maxval=4.)
+
+    def compute(self, pars, radii):
+        n = self.name
+        T0 = math.exp(pars['%s_logT0' % n].v)
+        Tmin = math.exp(pars['%s_logTmin' % n].v)
+        cc = pars['%s_cc' % n].v
+        ct = pars['%s_ct' % n].v
+        r500 = math.exp(pars['%s_logr500' % n].v)
+        acool = pars['%s_acool' % n].v
+        a = pars['%s_a' % n].v
+        b = pars['%s_b' % n].v
+        c = pars['%s_c' % n].v
+
+        x = radii.cent_kpc
+        x_rc = x/cc/r500
+        x_rt = x/ct/r500
+
+        T = (
+            T0
+            * (x_rc**acool + (Tmin/T0))
+            / (1 + x_rc**acool)
+            * x_rt**-a
+            / (1 + x_rt**b)**(c/b)
+            )
+
+        return T
