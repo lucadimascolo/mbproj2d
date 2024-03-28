@@ -13,9 +13,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+import matplotlib.pyplot as plt
 
 import math
 import numpy as N
+import scipy.integrate 
 
 from .model import SrcModelBase
 from .ratecalc import ApecRateCalc
@@ -23,7 +25,7 @@ from .profile import Radii
 from .fast import addSBToImg_Comb
 from .par import Par
 from . import utils
-from .physconstants import kpc_cm, Mpc_cm, kpc3_cm3, mu_e, mu_g, G_cgs, P_keV_to_erg
+from .physconstants import kpc_cm, Mpc_cm, kpc3_cm3, mu_e, m_p, f_b, mu_g, G_cgs, P_keV_to_erg
 
 class ClusterBase(SrcModelBase):
     """Base cluster model class.
@@ -196,7 +198,20 @@ class ClusterNonHydro(ClusterBase):
         """
 
         ne_arr = self.ne_prof.compute(pars, radii)
-        T_arr = self.T_prof.compute(pars, radii)
+        if hasattr(self.T_prof,'use500') and self.T_prof.use500:
+            re = radii.cent_kpc
+            ne_sum = 3.00*scipy.integrate.trapezoid(x=re,y=ne_arr*(re**2))/re**3
+            ne_sum = (mu_e*m_p/f_b)*ne_sum/self.cosmo.rho_c
+
+            re, ne_sum = re[::-1], ne_sum[::-1]
+
+            r500 = N.interp(500,ne_sum,re); del ne_sum
+            
+            T_arr = self.T_prof.compute(pars, radii, r500)
+        elif hasattr(self.T_prof,'useK') and self.T_prof.useK:
+            T_arr = self.T_prof.compute(pars, radii, ne_arr)
+        else: 
+            T_arr = self.T_prof.compute(pars, radii)
         Z_arr = self.Z_prof.compute(pars, radii)
 
         return ne_arr, T_arr, Z_arr

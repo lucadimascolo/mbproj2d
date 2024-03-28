@@ -60,3 +60,6 @@ m_p = 1.67262192e-24
 
 # mean molecular weight
 mu = 0.59
+
+# baryon fraction
+f_b = 0.175
