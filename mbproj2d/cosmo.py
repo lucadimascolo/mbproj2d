@@ -144,7 +144,7 @@ class Cosmology:
         self._calc_D_A = DA_Mpc
         self._calc_D_L = DL_Mpc
         self._calc_kpc_DA = kpc_DA
-
+    
         # added by JSS
         Hz_km_s_Mpc = H0 * sqrt( WM*(1.+z)**3 + WV )
         self._calc_rho_c = 3. * (

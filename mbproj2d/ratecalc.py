@@ -39,7 +39,7 @@ class ApecRateCalc:
     Results are cached in a file for subsequent runs
     """
 
-    Tmin = 0.06
+    Tmin = 0.01 #0.06
     Tmax = 60.
     Tsteps = 100
     Tlogvals = N.linspace(N.log(Tmin), N.log(Tmax), Tsteps)
